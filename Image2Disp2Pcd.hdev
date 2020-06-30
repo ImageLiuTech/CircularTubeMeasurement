@@ -48,8 +48,8 @@
 <l>get_grayval (Image_Laser, laserpos, Columns, Grayval)</l>
 <c></c>
 <l>gen_contour_polygon_xld (Contour1, laserpos, Columns)</l>
-<l>dev_set_window (DisImage_1)</l>
-<l>dev_display (Contour1)</l>
+<l>* dev_set_window (DisImage_1)</l>
+<l>* dev_display (Contour1)</l>
 </body>
 <docu id="main">
 <parameters/>
