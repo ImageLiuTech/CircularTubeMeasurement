@@ -1,0 +1,1432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.2" halcon_version="18.11.2.0">
+<procedure name="main">
+<interface/>
+<body>
+<l>* dev_update_off ()</l>
+<l>dev_open_window (0, 0, 200, 200, 'black', DisImage_1)</l>
+<l>dev_open_window (0, 210, 200, 200, 'black', DisImage_2)</l>
+<l>* dev_open_window (0, 420, 200, 200, 'black', DisContour_1)</l>
+<l>* dev_open_window (0, 630, 200, 200, 'black', DisContour_2)</l>
+<l>dev_open_window (0, 420, 200, 200, 'black', DisContour_Cam1)</l>
+<l>dev_open_window (0, 630, 200, 200, 'black', DisContour_Cam2)</l>
+<l>dev_open_window (0, 840, 200, 200, 'black', DisContour_All)</l>
+<c>*********标定得到的参数</c>
+<l>read_tuple ('./CalibrationParams/CamParam_0.tup', CameraParam_0)</l>
+<l>read_tuple ('./CalibrationParams/CamPose_0.tup',CamPose_0)</l>
+<l>read_tuple ('./CalibrationParams/LaserPose_0.tup', LightplanePose_0)</l>
+<c></c>
+<l>read_tuple ('./CalibrationParams/CamParam_1.tup', CameraParam_1)</l>
+<l>read_tuple ('./CalibrationParams/CamPose_1.tup',CamPose_1)</l>
+<l>read_tuple ('./CalibrationParams/LaserPose_1.tup', LightplanePose_1)</l>
+<l>create_pose (0, 0, 5, 0, 0, 0, 'Rp+T', 'gba', 'point', MovementPose)</l>
+<c>*********显示重建的图像</c>
+<l>im_width := 2448</l>
+<l>im_height := 1</l>
+<l>gen_rectangle1 (ROI, 0, 0, im_height-1,im_width-1)</l>
+<c></c>
+<l>create_sheet_of_light_model (ROI, ['min_gray','num_profiles'], [150,1], SheetOfLightID1)</l>
+<l>set_sheet_of_light_param (SheetOfLightID1, 'calibration', 'xyz')</l>
+<l>set_sheet_of_light_param (SheetOfLightID1, 'scale', 'm')</l>
+<c></c>
+<l>set_sheet_of_light_param (SheetOfLightID1, 'camera_parameter', CameraParam_0)</l>
+<l>set_sheet_of_light_param (SheetOfLightID1, 'camera_pose', CamPose_0)</l>
+<l>set_sheet_of_light_param (SheetOfLightID1, 'lightplane_pose', LightplanePose_0)</l>
+<l>set_sheet_of_light_param (SheetOfLightID1 , 'movement_pose', MovementPose)</l>
+<c></c>
+<c></c>
+<l>read_object (Disparity_0_0, 'Disparity/0/Disparity_0_0.hobj')</l>
+<l>* scale_image (Disparity_0_0, Disparity_0_0_copy, 1, 0)</l>
+<l>* threshold (Disparity_0_0_copy, Regions, 0, 0)</l>
+<l>* complement (Regions, RegionComplement)</l>
+<c></c>
+<l>* intersection (RegionComplement, Disparity_0_0_copy, Regions)</l>
+<l>* erosion_rectangle1 (Regions, Regions, 1, 1)</l>
+<l>* reduce_domain (Disparity_0_0_copy, Regions, DisparityOut)</l>
+<c></c>
+<l>set_profile_sheet_of_light(Disparity_0_0, SheetOfLightID1, [])</l>
+<l>get_sheet_of_light_result(ImageX1 , SheetOfLightID1 , 'x')</l>
+<l>get_sheet_of_light_result(ImageY1 , SheetOfLightID1 , 'y')</l>
+<l>get_sheet_of_light_result(ImageZ1 , SheetOfLightID1 , 'z')</l>
+<c></c>
+<l>gen_rectangle1 (Roi_Row, 0, 0, 0, 1626-1)</l>
+<l>intersection (ImageX1, Roi_Row, Roi_Row)</l>
+<l>get_region_points (Roi_Row, Rows, Columns)</l>
+<l>get_grayval (ImageX1, Rows, Columns, Pos_Xs)</l>
+<l>get_grayval (ImageY1, Rows, Columns, Pos_Ys)</l>
+<l>get_grayval (ImageZ1, Rows, Columns, Pos_Zs)</l>
+<l>gen_contour_polygon_xld (Contour, Pos_Ys, Pos_Xs)</l>
+<l>gen_object_model_3d_from_points (Pos_Xs, Pos_Ys, Pos_Zs, ObjectModel3D)</l>
+<c>    </c>
+<l>im_width := 1626</l>
+<l>im_height := 1</l>
+<l>gen_rectangle1 (ROI, 0, 0, im_height-1,im_width-1)</l>
+<c></c>
+<l>create_sheet_of_light_model (ROI, ['min_gray','num_profiles'], [150,1], SheetOfLightID2)</l>
+<l>set_sheet_of_light_param (SheetOfLightID2, 'calibration', 'xyz')</l>
+<l>set_sheet_of_light_param (SheetOfLightID2, 'scale', 'm')</l>
+<c></c>
+<l>set_sheet_of_light_param (SheetOfLightID2, 'camera_parameter', CameraParam_1)</l>
+<l>set_sheet_of_light_param (SheetOfLightID2, 'camera_pose', CamPose_1)</l>
+<l>set_sheet_of_light_param (SheetOfLightID2, 'lightplane_pose', LightplanePose_1)</l>
+<l>set_sheet_of_light_param (SheetOfLightID2 , 'movement_pose', MovementPose)</l>
+<c></c>
+<c></c>
+<l>read_object (Disparity_1_0, 'Disparity/1/Disparity_1_0.hobj')</l>
+<l>set_profile_sheet_of_light(Disparity_1_0, SheetOfLightID2, [])</l>
+<c></c>
+<l>get_sheet_of_light_result(ImageX2 , SheetOfLightID2 , 'x')</l>
+<l>get_sheet_of_light_result(ImageY2 , SheetOfLightID2 , 'y')</l>
+<l>get_sheet_of_light_result(ImageZ2 , SheetOfLightID2 , 'z')</l>
+<c></c>
+<l>gen_rectangle1 (Roi_Row, 0, 0, 0, 1626-1)</l>
+<l>intersection (ImageX2, Roi_Row, Roi_Row)</l>
+<l>get_region_points (Roi_Row, Rows, Columns)</l>
+<l>get_grayval (ImageX2, Rows, Columns, Pos_Xs)</l>
+<l>get_grayval (ImageY2, Rows, Columns, Pos_Ys)</l>
+<l>get_grayval (ImageZ2, Rows, Columns, Pos_Zs)</l>
+<l>gen_contour_polygon_xld (Contour, Pos_Ys, Pos_Xs)</l>
+<l>gen_object_model_3d_from_points (Pos_Xs, Pos_Ys, Pos_Zs, ObjectModel3D)</l>
+<c></c>
+<c>*********</c>
+<l>gen_empty_obj (DP)</l>
+<l>gen_empty_obj (LX)</l>
+<l>gen_empty_obj (LY)</l>
+<l>gen_empty_obj (LZ)</l>
+<l>concat_obj (Disparity_0_0, Disparity_1_0, DP)</l>
+<l>concat_obj (ImageX1, ImageX2, LX)</l>
+<l>concat_obj (ImageY1, ImageY2, LY)</l>
+<l>concat_obj (ImageZ1, ImageZ2, LZ)</l>
+<l>tile_images_offset (DP, DP1, [0,0], [0,1626], [-1,-1], [-1,-1], [-1,-1], [-1,-1], 1626*2, 1)</l>
+<l>tile_images_offset (LX, LX1, [0,0], [0,1626], [-1,-1], [-1,-1], [-1,-1], [-1,-1], 1626*2, 1)</l>
+<l>tile_images_offset (LY, LY1, [0,0], [0,1626], [-1,-1], [-1,-1], [-1,-1], [-1,-1], 1626*2, 1)</l>
+<l>tile_images_offset (LZ, LZ1, [0,0], [0,1626], [-1,-1], [-1,-1], [-1,-1], [-1,-1], 1626*2, 1)</l>
+<c></c>
+<l>* tile_images (LX, LX1, 1, 'horizontal')</l>
+<l>* tile_images (LY, LY1, 1, 'horizontal')</l>
+<l>* tile_images (LZ, LZ1, 1, 'horizontal')</l>
+<l>xyz_to_object_model_3d (LX1, LY1, LZ1, ObjectModel3D)</l>
+<l>gen_rectangle1 (Roi_Row, 0, 0, 0, 1626*2-1)</l>
+<l>intersection (LX1, Roi_Row, Roi_Row)</l>
+<l>get_region_points (Roi_Row, Rows, Columns)</l>
+<c></c>
+<l>* convert_image_type (LX1, ImageLX, 'int2')</l>
+<l>* gen_image_const (Image, 'int2', 1626*2, 1)</l>
+<c></c>
+<l>* tuple_gen_const (1626*2, 0, rows)</l>
+<l>* tuple_gen_sequence (0, 1626*2-1, 1, clos)</l>
+<c></c>
+<l>* tuple_gen_const (1626*2, 5000, grayval)</l>
+<l>* set_grayval (Image, rows, clos, grayval)</l>
+<l>* add_image (Image, ImageLX, ImageResult, 1, 0)</l>
+<l>* get_domain (ImageResult, Domain)</l>
+<l>* reduce_domain (LX1, Domain, ImageReduced)</l>
+<c></c>
+<l>* threshold (ImageResult, Regions, 5000, 5000)</l>
+<c></c>
+<c></c>
+<l>get_grayval (LX1, Rows, Columns, Pos_Xs)</l>
+<l>get_grayval (LY1, Rows, Columns, Pos_Ys)</l>
+<l>get_grayval (LZ1, Rows, Columns, Pos_Zs)</l>
+<l>* gen_contour_polygon_xld (Contour, Pos_Ys, Pos_Xs)</l>
+<l>* tuple_gen_const (|Pos_Xs|, 0, Pos_Zs)</l>
+<l>gen_object_model_3d_from_points (Pos_Xs, Pos_Ys, Pos_Zs, ObjectModel3D)</l>
+<c></c>
+<c></c>
+<l>gen_contour_polygon_xld (Contour, Pos_Ys, Pos_Xs)</l>
+<c>*总的轮廓进行原点调整</c>
+<l>origin_adjustment (Contour, Contour, Coord_Y, Coord_X)</l>
+<c>*找到x y的最大最小值</c>
+<l>find_max_min (Coord_Y, Coord_X, min_y, max_y, min_x, max_x)</l>
+<c></c>
+<c></c>
+<c>*边距的阈值，用于去除交点并拟合直线</c>
+<l>threshold_edge_distance:=10</l>
+<c></c>
+<c>*------------------------------------------厚度</c>
+<c>*上线段</c>
+<l>find_upside (ContourUpper, Coord_Y, Coord_X, min_x, max_x, threshold_edge_distance, Upper_X, Upper_Y, Upper_RowBegin, Upper_ColBegin, Upper_RowEnd, Upper_ColEnd)</l>
+<l>* disp_line (WindowHandle, RowBegin, ColBegin, RowEnd, ColEnd)</l>
+<c>*下线段</c>
+<l>find_bottomside (ContourLower, Coord_Y, Coord_X, min_x, max_x, threshold_edge_distance, Lower_X, Lower_Y, Bottom_RowBegin, Bottom_ColBegin, Lower_RowEnd, Lower_ColEnd)</l>
+<c>*计算上下厚度</c>
+<l>distance_pl (Upper_Y, Upper_X, Bottom_RowBegin, Bottom_ColBegin, Lower_RowEnd, Lower_ColEnd, Distance)</l>
+<c>*最大厚度</c>
+<l>tuple_max (Distance, Distance_max_thickness)</l>
+<l>disp_message (DisContour_All, '最大厚度:'+Distance_max_thickness+'mm', 'window', 12, 12, 'black', 'true')</l>
+<c>*最小厚度</c>
+<l>tuple_min (Distance, Distance_min_thickness)</l>
+<l>disp_message (DisContour_All, '最小厚度:'+Distance_min_thickness+'mm', 'window', 24, 12, 'black', 'true')</l>
+<c>*平均</c>
+<l>tuple_mean (Distance, Distance_mean_thickness)</l>
+<l>disp_message (DisContour_All, '平均厚度:'+Distance_mean_thickness+'mm', 'window', 36, 12, 'black', 'true')</l>
+<c></c>
+<c>*------------------------------------------宽度</c>
+<c>*左线段</c>
+<l>find_leftside (ContourLeft, Coord_X, Coord_Y, max_y, min_y, threshold_edge_distance, Left_X, Left_Y, Left_RowBegin, Left_ColBegin, Left_RowEnd, Left_ColEnd)</l>
+<c>*右线段</c>
+<l>find_rightside (ContourRight, Coord_X, Coord_Y, max_y, min_y, threshold_edge_distance, Right_X, Right_Y, Right_RowBegin, Right_ColBegin, Right_RowEnd, Right_ColEnd)</l>
+<c>*计算左右宽度</c>
+<l>distance_pl (Left_Y, Left_X, Right_RowBegin, Right_ColBegin, Right_RowEnd, Right_ColEnd, Distance)</l>
+<c>*最大宽度</c>
+<l>tuple_max (Distance, Distance_max_width)</l>
+<l>disp_message (DisContour_All, '最大宽度:'+Distance_max_width+'mm', 'window', 48, 12, 'black', 'true')</l>
+<c>*最小宽度</c>
+<l>tuple_min (Distance, Distance_min_width)</l>
+<l>disp_message (DisContour_All, '最小宽度:'+Distance_min_width+'mm', 'window', 60, 12, 'black', 'true')</l>
+<c>*平均宽度</c>
+<l>tuple_mean (Distance, Distance_mean_width)</l>
+<l>disp_message (DisContour_All, '平均宽度:'+Distance_mean_width+'mm', 'window', 72, 12, 'black', 'true')</l>
+<c></c>
+<c>*------------------------------------------直角度</c>
+<c>*左上直角度</c>
+<l>* angle_ll ( Upper_RowBegin, Upper_ColBegin, Upper_RowEnd, Upper_ColEnd, Left_RowBegin, Left_ColBegin, Left_RowEnd, Left_ColEnd, Left_Upper_Angle)</l>
+<l>* Left_Upper_Ang:=deg(Left_Upper_Angle)</l>
+<l>* disp_message (DisContour_All, '左上直角度:'+Left_Upper_Ang+'度', 'window', 84, 12, 'black', 'true')</l>
+<c>*左下直角度</c>
+<l>* angle_ll (Bottom_RowBegin, Bottom_ColBegin, Lower_RowEnd, Lower_ColEnd, Left_RowBegin, Left_ColBegin, Left_RowEnd, Left_ColEnd, Left_Bottom_Angle)</l>
+<l>* Left_Bottom_Ang:=deg(Left_Bottom_Angle)</l>
+<l>* disp_message (DisContour_All, '左下直角度:'+Left_Bottom_Ang+'度', 'window', 96, 12, 'black', 'true')</l>
+<c>*右上直角度</c>
+<l>* angle_ll (Right_RowBegin, Right_ColBegin, Right_RowEnd, Right_ColEnd, Upper_RowBegin, Upper_ColBegin, Upper_RowEnd, Upper_ColEnd, Right_Upper_Angle)</l>
+<l>* Right_Upper_Ang:=deg(Right_Upper_Angle)</l>
+<l>* disp_message (DisContour_All, '右上直角度:'+Right_Upper_Ang+'度', 'window', 108, 12, 'black', 'true')</l>
+<c>*右下直角度</c>
+<l>* angle_ll (Right_RowBegin, Right_ColBegin, Right_RowEnd, Right_ColEnd,  Bottom_RowBegin, Bottom_ColBegin, Lower_RowEnd, Lower_ColEnd, Right_Bottom_Angle)</l>
+<l>* Right_Bottom_Ang:=deg(Right_Bottom_Angle)</l>
+<l>* disp_message (DisContour_All, '右下直角度:'+Right_Bottom_Ang+'度', 'window', 120, 12, 'black', 'true')</l>
+<c></c>
+<c></c>
+<c>*-----------------------------------------圆角半径,单个相机恢复出的轮廓</c>
+<l>* read_tuple ('./Coord_X_Single.tup',Coord_X_Single)</l>
+<l>* read_tuple ('./Coord_Y_Single.tup',Coord_Y_Single)</l>
+<c>*去除首尾的噪点</c>
+<l>* threshold_edge_distance:=20</l>
+<l>* corner_radius (Coord_X_Single, Coord_Y_Single, threshold_edge_distance, Radius)</l>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+<procedure name="gen_same_rail_from_proflie">
+<interface>
+<ic>
+<par name="X" base_type="ctrl" dimension="0"/>
+<par name="Y" base_type="ctrl" dimension="0"/>
+<par name="num_profile" base_type="ctrl" dimension="0"/>
+<par name="point_num" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="ObjectModel3D" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<c>* 初始化XYZ Map</c>
+<l>gen_image_const (ImageX, 'real', |X|, num_profile)</l>
+<l>gen_image_const (ImageY, 'real', |X|, num_profile)</l>
+<l>gen_image_const (ImageZ, 'real', |X|, num_profile)</l>
+<c>* </c>
+<c>* 生成XYZ Map</c>
+<l>for id := 0 to num_profile-1 by 1</l>
+<c>    * </c>
+<l>    tuple_gen_const (point_num, id, Rows)</l>
+<l>    tuple_gen_sequence (0, point_num-1, 1, Cols)</l>
+<c>    * </c>
+<l>    set_grayval (ImageX, Rows, Cols, X)</l>
+<l>    set_grayval (ImageY, Rows, Cols, Y)</l>
+<l>    set_grayval (ImageZ, Rows, Cols, Rows*num_profile)</l>
+<l>endfor</l>
+<c>* </c>
+<c>* 生成点云</c>
+<l>xyz_to_object_model_3d (ImageX, ImageY, ImageZ, ObjectModel3D)</l>
+<c>* 三角化</c>
+<l>triangulate_object_model_3d (ObjectModel3D, 'xyz_mapping', [], [], ObjectModel3D, Information)</l>
+<c>* 模拟钢轨长度</c>
+<l>return ()</l>
+</body>
+<docu id="gen_same_rail_from_proflie">
+<parameters>
+<parameter id="ObjectModel3D"/>
+<parameter id="X"/>
+<parameter id="Y"/>
+<parameter id="num_profile"/>
+<parameter id="point_num"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="Cal_Laser_Pose">
+<interface>
+<ic>
+<par name="laser_Pos_X" base_type="ctrl" dimension="0"/>
+<par name="laser_Pos_Y" base_type="ctrl" dimension="0"/>
+<par name="laser_LookAt_X" base_type="ctrl" dimension="0"/>
+<par name="laser_LookAt_Y" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="LaserPose" base_type="ctrl" dimension="0"/>
+<par name="LaserPlanePose" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>create_cam_pose_look_at_point (laser_Pos_X, laser_Pos_Y, 0, laser_LookAt_X, laser_LookAt_Y, 0, '-y', 0, LaserPose)</l>
+<l>pose_to_hom_mat3d (LaserPose, HomMat3D)</l>
+<l>hom_mat3d_rotate (HomMat3D, rad(90), 'y', 0, 0, 0, HomMat3D)</l>
+<l>hom_mat3d_to_pose (HomMat3D, LaserPlanePose)</l>
+<l>return ()</l>
+</body>
+<docu id="Cal_Laser_Pose">
+<parameters>
+<parameter id="LaserPlanePose"/>
+<parameter id="LaserPose"/>
+<parameter id="laser_LookAt_X"/>
+<parameter id="laser_LookAt_Y"/>
+<parameter id="laser_Pos_X"/>
+<parameter id="laser_Pos_Y"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="Xld_Div">
+<interface>
+<io>
+<par name="Contour_Inter" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="xld_divs" base_type="iconic" dimension="0"/>
+</oo>
+</interface>
+<body>
+<l>get_contour_xld (Contour_Inter, Row, Col)</l>
+<l>id_split := [0]</l>
+<l>diff_rows := []</l>
+<l>div_threshold := 6</l>
+<l>for i := 0 to |Row|-2 by 1</l>
+<l>    diff_row := abs( Row[i+1]-Row[i])</l>
+<c>    * </c>
+<l>    if (diff_row &gt; div_threshold)</l>
+<l>        id_split := [id_split,i]</l>
+<l>        diff_rows := [diff_rows,diff_row]</l>
+<l>    endif</l>
+<l>endfor</l>
+<l>id_split := [id_split,|Row|-1]</l>
+<c>* </c>
+<l>gen_empty_obj (xld_divs)</l>
+<l>for i := 0 to |id_split|-2 by 1</l>
+<l>    gen_contour_polygon_xld (xld_div, Row[id_split[i]+1:id_split[i+1]], Col[id_split[i]+1:id_split[i+1]])</l>
+<c>    * </c>
+<l>    tuple_gen_const (|Row[id_split[i]+1:id_split[i+1]]|, 0.00001, radius)</l>
+<l>    gen_contour_polygon_rounded_xld (xld_div, Row[id_split[i]+1:id_split[i+1]], Col[id_split[i]+1:id_split[i+1]], radius, 0.1)</l>
+<c>    * </c>
+<l>    concat_obj (xld_divs, xld_div, xld_divs)</l>
+<l>endfor</l>
+<l>return ()</l>
+</body>
+<docu id="Xld_Div">
+<parameters>
+<parameter id="Contour_Inter"/>
+<parameter id="xld_divs"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="Cal_Laser_Rail_CrossXld">
+<interface>
+<io>
+<par name="Rail_Xld" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="Cross_Xlds" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="Pos_X" base_type="ctrl" dimension="0"/>
+<par name="Pos_Y" base_type="ctrl" dimension="0"/>
+<par name="LookAt_X" base_type="ctrl" dimension="0"/>
+<par name="LookAt_Y" base_type="ctrl" dimension="0"/>
+<par name="Divergence" base_type="ctrl" dimension="0"/>
+<par name="Step" base_type="ctrl" dimension="0"/>
+<par name="Win_Laser_Cross" base_type="ctrl" dimension="0"/>
+<par name="laser_Color" base_type="ctrl" dimension="0"/>
+</ic>
+</interface>
+<body>
+<c>* 激光中心线</c>
+<l>gen_contour_polygon_xld (line_mid, [Pos_Y, LookAt_Y], [Pos_X, LookAt_X])</l>
+<c>* </c>
+<c>* 激光线左边沿</c>
+<l>hom_mat2d_identity (HomMat2D)</l>
+<l>hom_mat2d_scale (HomMat2D, 2, 2, Pos_Y, Pos_X, HomMat2D)</l>
+<l>hom_mat2d_rotate (HomMat2D, rad(real(Divergence)/2.0), Pos_Y, Pos_X, HomMat2D)</l>
+<l>affine_trans_contour_xld (line_mid, line_left, HomMat2D)</l>
+<l>* dev_display (line_left)</l>
+<c>* </c>
+<l>Cross_Xs := []</l>
+<l>Cross_Ys := []</l>
+<l>for i := 0 to Step-1 by 1</l>
+<l>    hom_mat2d_identity (HomMat2D)</l>
+<l>    hom_mat2d_rotate (HomMat2D, -rad(real(Divergence)/(Step-1.0))*i, Pos_Y, Pos_X, HomMat2D)</l>
+<l>    affine_trans_contour_xld (line_left, line_Out, HomMat2D)</l>
+<c>    * </c>
+<c>    * 计算焦点</c>
+<l>    intersection_contours_xld (Rail_Xld, line_Out, 'mutual', ys, xs, IsOverlapping1)</l>
+<c>    * </c>
+<l>    if (|ys| != 0)</l>
+<c>        * </c>
+<l>        tuple_gen_const (|ys|, Pos_Y, Pos_Ys)</l>
+<l>        tuple_gen_const (|ys|, Pos_X, Pos_Xs)</l>
+<l>        distance_pp (Pos_Ys, Pos_Xs, ys, xs, Distance)</l>
+<c>        * </c>
+<l>        tuple_sort_index (Distance, Sort_Id)</l>
+<c>        * </c>
+<l>        Cross_Xs := [Cross_Xs,xs[Sort_Id[0]]]</l>
+<l>        Cross_Ys := [Cross_Ys,ys[Sort_Id[0]]]</l>
+<l>    endif</l>
+<c>    * </c>
+<c>    * 显示</c>
+<l>    if (i==0 or i == Step-1)</l>
+<l>        dev_set_window (Win_Laser_Cross)</l>
+<l>        dev_set_color (laser_Color)</l>
+<l>        dev_display (line_Out)</l>
+<l>    endif</l>
+<c>    * </c>
+<l>endfor</l>
+<c>* </c>
+<l>* tuple_gen_const (|Cross_Ys|, 5, rs)</l>
+<l>* disp_circle (3600, Cross_Ys, Cross_Xs, rs)</l>
+<c>* </c>
+<c>* </c>
+<l>gen_contour_polygon_xld (Cross_Xld, Cross_Ys, Cross_Xs)</l>
+<c>* </c>
+<c>* 分割</c>
+<l>Xld_Div (Cross_Xld, Cross_Xlds)</l>
+<l>return ()</l>
+</body>
+<docu id="Cal_Laser_Rail_CrossXld">
+<parameters>
+<parameter id="Cross_Xlds"/>
+<parameter id="Divergence"/>
+<parameter id="LookAt_X"/>
+<parameter id="LookAt_Y"/>
+<parameter id="Pos_X"/>
+<parameter id="Pos_Y"/>
+<parameter id="Rail_Xld"/>
+<parameter id="Step"/>
+<parameter id="Win_Laser_Cross"/>
+<parameter id="laser_Color"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="Xld_To_Model3d">
+<interface>
+<io>
+<par name="Cross_Xlds" base_type="iconic" dimension="0"/>
+</io>
+<oc>
+<par name="Model3d_CrossLine" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>count_obj (Cross_Xlds, Number)</l>
+<c>* </c>
+<l>Model3d_CrossLines := []</l>
+<l>for id := 1 to Number by 1</l>
+<l>    select_obj (Cross_Xlds, Cross_Xld, id)</l>
+<c>    * </c>
+<l>    get_contour_xld (Cross_Xld, Ys, Xs)</l>
+<l>    tuple_gen_const (|Xs|, 0, Zs)</l>
+<c>    * </c>
+<l>    gen_object_model_3d_from_points (Xs, Ys, Zs, Model3D)</l>
+<c>    * </c>
+<l>    line_ids := []</l>
+<l>    for Index := 0 to |Xs|-2 by 1</l>
+<l>        line_ids := [line_ids,2,Index,Index+1]</l>
+<l>    endfor</l>
+<l>    set_object_model_3d_attrib (Model3D, 'lines', [], line_ids, Model3D)</l>
+<c>    * </c>
+<l>    Model3d_CrossLines := [Model3d_CrossLines,Model3D]</l>
+<l>endfor</l>
+<l>union_object_model_3d (Model3d_CrossLines, 'points_surface', Model3d_CrossLine)</l>
+<l>return ()</l>
+</body>
+<docu id="Xld_To_Model3d">
+<parameters>
+<parameter id="Cross_Xlds"/>
+<parameter id="Model3d_CrossLine"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="Cal_Laser_Image">
+<interface>
+<io>
+<par name="Rail_Xld" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="Image" base_type="iconic" dimension="0"/>
+<par name="Cross_Xlds" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="Model3D_Rail" base_type="ctrl" dimension="0"/>
+<par name="Cam_Pos_X" base_type="ctrl" dimension="0"/>
+<par name="Cam_Pos_Y" base_type="ctrl" dimension="0"/>
+<par name="Cam_Pos_Z" base_type="ctrl" dimension="0"/>
+<par name="Cam_LookAt_X" base_type="ctrl" dimension="0"/>
+<par name="Cam_LookAt_Y" base_type="ctrl" dimension="0"/>
+<par name="Cam_LookAt_Z" base_type="ctrl" dimension="0"/>
+<par name="Cam_Roll" base_type="ctrl" dimension="0"/>
+<par name="CamParam" base_type="ctrl" dimension="0"/>
+<par name="laser_Pos_X" base_type="ctrl" dimension="0"/>
+<par name="laser_Pos_Y" base_type="ctrl" dimension="0"/>
+<par name="laser_LookAt_X" base_type="ctrl" dimension="0"/>
+<par name="laser_LookAt_Y" base_type="ctrl" dimension="0"/>
+<par name="laser_Divergence" base_type="ctrl" dimension="0"/>
+<par name="Laser_Step" base_type="ctrl" dimension="0"/>
+<par name="laser_Color" base_type="ctrl" dimension="0"/>
+<par name="Win_Laser_Cross" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="CamPose" base_type="ctrl" dimension="0"/>
+<par name="LaserPose" base_type="ctrl" dimension="0"/>
+<par name="LaserPlanePose" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<c>* 相机Pose</c>
+<l>create_cam_pose_look_at_point (Cam_Pos_X, Cam_Pos_Y, Cam_Pos_Z, Cam_LookAt_X, Cam_LookAt_Y, Cam_LookAt_Z, '-y', Cam_Roll, CamPose)</l>
+<c>* </c>
+<c>* 激光Pose</c>
+<l>Cal_Laser_Pose (laser_Pos_X, laser_Pos_Y, laser_LookAt_X, laser_LookAt_Y, LaserPose, LaserPlanePose)</l>
+<c>* </c>
+<c>* 计算激光与钢轨的交叉线</c>
+<l>Cal_Laser_Rail_CrossXld (Rail_Xld, Cross_Xlds, laser_Pos_X, laser_Pos_Y, laser_LookAt_X, laser_LookAt_Y, laser_Divergence, Laser_Step, Win_Laser_Cross, laser_Color)</l>
+<c>* </c>
+<c>* 交叉线 转 Model3d</c>
+<l>Xld_To_Model3d (Cross_Xlds, Model3d_CrossLine)</l>
+<c>* </c>
+<c>* 渲染图像</c>
+<l>GenParamName := ['color_0','color_1','alpha_1']</l>
+<l>GenParamValue := ['black','white',1]</l>
+<l>* GenParamValue := ['gray','red',1]</l>
+<l>render_object_model_3d (Image, [Model3D_Rail, Model3d_CrossLine], CamParam, CamPose, GenParamName, GenParamValue)</l>
+<c>* </c>
+<l>return ()</l>
+</body>
+<docu id="Cal_Laser_Image">
+<parameters>
+<parameter id="CamParam"/>
+<parameter id="CamPose"/>
+<parameter id="Cam_LookAt_X"/>
+<parameter id="Cam_LookAt_Y"/>
+<parameter id="Cam_LookAt_Z"/>
+<parameter id="Cam_Pos_X"/>
+<parameter id="Cam_Pos_Y"/>
+<parameter id="Cam_Pos_Z"/>
+<parameter id="Cam_Roll"/>
+<parameter id="Cross_Xlds"/>
+<parameter id="Image"/>
+<parameter id="LaserPlanePose"/>
+<parameter id="LaserPose"/>
+<parameter id="Laser_Step"/>
+<parameter id="Model3D_Rail"/>
+<parameter id="Rail_Xld"/>
+<parameter id="Win_Laser_Cross"/>
+<parameter id="laser_Color"/>
+<parameter id="laser_Divergence"/>
+<parameter id="laser_LookAt_X"/>
+<parameter id="laser_LookAt_Y"/>
+<parameter id="laser_Pos_X"/>
+<parameter id="laser_Pos_Y"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="xld_div">
+<interface>
+<io>
+<par name="Contour_Inter" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="xld_divs" base_type="iconic" dimension="0"/>
+</oo>
+</interface>
+<body>
+<l>get_contour_xld (Contour_Inter, Row, Col)</l>
+<l>for i := 0 to |Row| by 1</l>
+<l>    distance_pp (Row[i], Col[i], Row[i+1], Col[i+1], Distance)</l>
+<l>    if (Distance&gt;5)</l>
+<l>        ind := i</l>
+<l>        break</l>
+<l>    endif</l>
+<l>endfor</l>
+<l>gen_empty_obj (xld_divs)</l>
+<l>tuple_select_range (Row, 0, ind, Row1)</l>
+<l>tuple_select_range (Col, 0, ind, Col1)</l>
+<l>tuple_select_range (Row, ind+1, |Row|-1, Row2)</l>
+<l>tuple_select_range (Col, ind+1, |Row|-1, Col2)</l>
+<l>gen_contour_polygon_xld (Contour1, Row1, Col1)</l>
+<l>concat_obj (xld_divs, Contour1, xld_divs)</l>
+<l>gen_contour_polygon_xld (Contour2, Row2, Col2)</l>
+<l>concat_obj (xld_divs, Contour2, xld_divs)</l>
+<l>return ()</l>
+</body>
+<docu id="xld_div">
+<parameters>
+<parameter id="Contour_Inter"/>
+<parameter id="xld_divs"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="Cal_LaserImage">
+<interface>
+<oo>
+<par name="Images" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="CamParam" base_type="ctrl" dimension="0"/>
+<par name="CamPose" base_type="ctrl" dimension="1"/>
+<par name="SubPixelFactor" base_type="ctrl" dimension="0"/>
+<par name="RailModel3D" base_type="ctrl" dimension="0"/>
+<par name="Model3D_LaserCut" base_type="ctrl" dimension="0"/>
+</ic>
+</interface>
+<body>
+<l>im_width := CamParam[6]</l>
+<l>im_height := CamParam[7]</l>
+<l>gen_empty_obj (Images)</l>
+<l>for id_Cam := 0 to CamPose.length()-1 by 1</l>
+<c>    * 计算理论精度  像素点转到世界坐标系下z=0面上的坐标</c>
+<l>*     image_points_to_world_plane (CamParam, CamPose.at(id_Cam), (im_height/2)+1.0/SubPixelFactor, im_width/2, 'm', pos_x, pos_y)</l>
+<l>*     error1 := pos_x * pos_x + pos_y * pos_y</l>
+<l>*     tuple_sqrt (error1, error1)</l>
+<c>    * </c>
+<l>*     image_points_to_world_plane (CamParam, CamPose.at(id_Cam), (im_height/2)+1.0/SubPixelFactor, im_width/2, 'm', pos_x, pos_y)</l>
+<l>*     error2 := pos_x * pos_x + pos_y * pos_y</l>
+<l>*     tuple_sqrt (error2, error2)</l>
+<c>    * 渲染图像</c>
+<l>    GenParamName := ['color_0','color_1']</l>
+<l>    GenParamValue := ['black','white']</l>
+<l>    render_object_model_3d (Image, [RailModel3D, Model3D_LaserCut], CamParam, CamPose.at(id_Cam), GenParamName, GenParamValue)</l>
+<l>    concat_obj (Images, Image, Images)</l>
+<l>endfor</l>
+<l>return ()</l>
+</body>
+<docu id="Cal_LaserImage">
+<parameters>
+<parameter id="CamParam"/>
+<parameter id="CamPose"/>
+<parameter id="Images"/>
+<parameter id="Model3D_LaserCut"/>
+<parameter id="RailModel3D"/>
+<parameter id="SubPixelFactor"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="sort_xld_from_angle">
+<interface>
+<io>
+<par name="Sum_Xld" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="List_Xld" base_type="iconic" dimension="0"/>
+</oo>
+</interface>
+<body>
+<c>* ***************** 计算单剖面每个部分角度并保存</c>
+<l>List_PartCenterAngle := []</l>
+<l>count_obj (Sum_Xld, ListCount)</l>
+<l>for Id_XldPart := 1 to ListCount by 1</l>
+<l>    select_obj (Sum_Xld, XldPart, Id_XldPart)</l>
+<l>    area_center_points_xld (XldPart, Area, Center_Row, Center_Col)</l>
+<l>    angle_lx (0, 0, Center_Row, Center_Col, Angle)</l>
+<l>    if (Angle &lt; 0)</l>
+<l>        Angle := 3.1415926 * 2 + Angle</l>
+<l>    endif</l>
+<l>    List_PartCenterAngle := [List_PartCenterAngle , Angle]</l>
+<l>endfor</l>
+<c>* </c>
+<c>* *************根据角度大小排序</c>
+<l>tuple_sort_index (List_PartCenterAngle, SortPart_ID)</l>
+<c>* *************计算每部分点云数据排序的方向是否一致，如果方向不对，需flag，以便后期翻转。</c>
+<l>List_IsFlip := []</l>
+<l>count_obj (Sum_Xld, ListCount)</l>
+<l>for Id_XldPart := 1 to ListCount by 1</l>
+<l>    select_obj (Sum_Xld, XldPart, Id_XldPart)</l>
+<l>    get_contour_xld (XldPart, Row, Col)</l>
+<l>    angle_ll (0, 0, Row[0], Col[0], 0, 0, Row[10], Col[10], Angle1)</l>
+<l>    if (Angle1 &lt; 0)</l>
+<l>        List_IsFlip := [List_IsFlip,1]</l>
+<l>    else</l>
+<l>        List_IsFlip := [List_IsFlip,0]</l>
+<l>    endif</l>
+<l>endfor</l>
+<c>* </c>
+<l>CoordX_Sort := []</l>
+<l>CoordY_Sort := []</l>
+<l>gen_empty_obj (List_Xld)</l>
+<l>count_obj (Sum_Xld, ListCount)</l>
+<l>for Index := 0 to |SortPart_ID| - 1 by 1</l>
+<l>    SortId := SortPart_ID[Index]</l>
+<l>    select_obj (Sum_Xld, PartXldX, SortId + 1)</l>
+<l>    get_contour_xld (PartXldX, Sort_Part_Y, Sort_Part_X)</l>
+<l>    if (List_IsFlip[SortId] == 1)</l>
+<c>        * 翻转，以便按顺序拼接</c>
+<l>        tuple_inverse (Sort_Part_Y, Sort_Part_Y)</l>
+<l>        tuple_inverse (Sort_Part_X, Sort_Part_X)</l>
+<l>    endif</l>
+<l>    CoordX_Sort := [CoordX_Sort,Sort_Part_X]</l>
+<l>    CoordY_Sort := [CoordY_Sort,Sort_Part_Y]</l>
+<l>    gen_contour_polygon_xld (List_Xld_Part, Sort_Part_Y, Sort_Part_X)</l>
+<l>    concat_obj (List_Xld, List_Xld_Part, List_Xld)</l>
+<l>endfor</l>
+<l>gen_contour_polygon_xld (Contour, CoordY_Sort, CoordX_Sort)</l>
+<l>return ()</l>
+</body>
+<docu id="sort_xld_from_angle">
+<parameters>
+<parameter id="List_Xld"/>
+<parameter id="Sum_Xld"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="reduce_overlap_xld">
+<interface>
+<io>
+<par name="List_Xld" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="last_coutour" base_type="iconic" dimension="0"/>
+</oo>
+<oc>
+<par name="CoordX" base_type="ctrl" dimension="0"/>
+<par name="CoordY" base_type="ctrl" dimension="0"/>
+<par name="CoordZ" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>* subscript_behindOut := subscript_behind</l>
+<l>CoordX := []</l>
+<l>CoordY := []</l>
+<l>CoordZ := []</l>
+<l>count_obj (List_Xld, Number)</l>
+<l>for Index := 1 to Number by 1</l>
+<l>    select_obj (List_Xld, Xld_Front, Index)</l>
+<l>    get_contour_xld (Xld_Front, Front_y, Front_x)</l>
+<l>    if (Index=Number)</l>
+<l>        select_obj (List_Xld, Xld_behind, 1)</l>
+<l>    else</l>
+<l>        select_obj (List_Xld, Xld_behind, Index+1)</l>
+<l>    endif</l>
+<l>    get_contour_xld (Xld_behind, behind_y, behind_x)</l>
+<l>    gen_contour_polygon_xld (Xld_behind, behind_y, behind_x)</l>
+<c>    * -------------------------------------------------</c>
+<c>    * 找到第Index条点云线上最接近于第Index+1条的第一个点</c>
+<l>    behind_head_x := behind_x[0]</l>
+<l>    behind_head_y := behind_y[0]</l>
+<l>    distance_flag := 100</l>
+<l>    for i := 0 to |Front_y|-1 by 1</l>
+<l>        subscript := |Front_y|-1-i</l>
+<l>        distance_pp (behind_head_y, behind_head_x, Front_y[subscript], Front_x[subscript], Distance_bf)</l>
+<l>        if (Distance_bf&lt;distance_flag)</l>
+<l>            distance_flag := Distance_bf</l>
+<l>            Front_close_x := Front_x[subscript]</l>
+<l>            Front_close_y := Front_y[subscript]</l>
+<l>            subscript_Front := subscript</l>
+<l>        endif</l>
+<l>    endfor</l>
+<l>*     disp_cross (3600, Front_close_y, Front_close_x, 6, 0)</l>
+<c>    * 取得在第Index条点云线重叠的集合部分（extra）</c>
+<l>    tuple_select_range (Front_y, subscript_Front, |Front_y|-1, extra_Front_y)</l>
+<l>    tuple_select_range (Front_x, subscript_Front, |Front_y|-1, extra_Front_x)</l>
+<c>    * -------------独立数据的保存</c>
+<l>    tuple_select_range (Front_y, 0, subscript_Front-1, indep_Front_y)</l>
+<l>    tuple_select_range (Front_x, 0, subscript_Front-1, indep_Front_x)</l>
+<l>    if (Index=1)</l>
+<l>        CoordX := [CoordX,indep_Front_x]</l>
+<l>        CoordY := [CoordY,indep_Front_y]</l>
+<l>    else</l>
+<l>        if (subscript_behindOut&gt;subscript_Front)</l>
+<l>            continue</l>
+<l>        endif</l>
+<l>        tuple_select_range (Front_y, subscript_behindOut, subscript_Front, indep_Front_y)</l>
+<l>        tuple_select_range (Front_x, subscript_behindOut, subscript_Front, indep_Front_x)</l>
+<l>        CoordX := [CoordX,indep_Front_x]</l>
+<l>        CoordY := [CoordY,indep_Front_y]</l>
+<l>    endif</l>
+<c>    * ----------------------------</c>
+<c>    * 找到第二个临近点并取得集合</c>
+<l>    Front_last_x := Front_x[|Front_x|-1]</l>
+<l>    Front_last_y := Front_y[|Front_x|-1]</l>
+<l>    distance_flag := 100</l>
+<l>    for i := 0 to |behind_x|-1 by 1</l>
+<l>*         subscript := |Front_y|-1-i</l>
+<l>        distance_pp (Front_last_y, Front_last_x, behind_y[i], behind_x[i], Distance_bf)</l>
+<l>        if (Distance_bf&lt;distance_flag)</l>
+<l>            distance_flag := Distance_bf</l>
+<l>            behind_close_x := behind_x[i]</l>
+<l>            behind_close_y := behind_y[i]</l>
+<l>            subscript_behindOut := i</l>
+<l>        endif</l>
+<l>    endfor</l>
+<l>*     disp_cross (3600, behind_close_y, behind_close_x, 6, 0)</l>
+<c>    * 取得在第Index+1条点云线重叠的集合部分</c>
+<l>    tuple_select_range (behind_y, 0, subscript_behindOut, extra_behind_y)</l>
+<l>    tuple_select_range (behind_x, 0, subscript_behindOut, extra_behind_x)</l>
+<c>    * ------------------------------------------------</c>
+<c>    * 重叠区域集合</c>
+<l>    tuple_concat (extra_Front_y, extra_behind_y, concat_y)</l>
+<l>    tuple_concat (extra_Front_x, extra_behind_x, concat_x)</l>
+<l>*     gen_contour_polygon_xld (Xld_bf, concat_y, concat_x)</l>
+<c>    * 重叠区域重新排列</c>
+<l>    tuple_max (extra_Front_x, Max_x)</l>
+<l>    tuple_min (extra_Front_x, Min_x)</l>
+<l>    tuple_max (extra_Front_y, Max_y)</l>
+<l>    tuple_min (extra_Front_y, Min_y)</l>
+<c>    * 如果说y轴变化大，以y轴为基础进行排列，反之，以x排列</c>
+<l>    if ((Max_x-Min_x)&lt;(Max_y-Min_y))</l>
+<l>        tuple_sort_index (concat_y, Indices)</l>
+<l>        if (Min_x&gt;0)</l>
+<l>            tuple_inverse (Indices, Indices)</l>
+<l>        endif</l>
+<l>        concat_x := concat_x[Indices]</l>
+<l>        concat_y := concat_y[Indices]</l>
+<l>    else</l>
+<l>        tuple_sort_index (concat_x, Indices)</l>
+<l>        if (Min_y&lt;0)</l>
+<l>            tuple_inverse (Indices, Indices)</l>
+<l>        endif</l>
+<l>        concat_x := concat_x[Indices]</l>
+<l>        concat_y := concat_y[Indices]</l>
+<l>    endif</l>
+<l>*     gen_contour_polygon_xld (Xld_bf, concat_y, concat_x)</l>
+<c>    * 拟合点集，overlap_num_points=（concat_num_points-2）/2,间隔为2，每连续的四个点为一点</c>
+<l>    overlap_x := []</l>
+<l>    overlap_y := []</l>
+<l>    for j := 0 to |concat_y|-4 by 2</l>
+<l>        tuple_select_range (concat_y, j, j+3, Selected_y)</l>
+<l>        tuple_select_range (concat_x, j, j+3, Selected_x)</l>
+<l>        tuple_mean (Selected_x, Mean_x)</l>
+<l>        tuple_mean (Selected_y, Mean_y)</l>
+<l>        overlap_x := [overlap_x,Mean_x]</l>
+<l>        overlap_y := [overlap_y,Mean_y]</l>
+<l>    endfor</l>
+<l>*     gen_contour_polygon_xld (overlap, overlap_y, overlap_x)</l>
+<l>*     num_points := (|concat_y|-2)/2</l>
+<l>*     gen_contour_polygon_xld (Xld_overlap, overlap_y, overlap_x)</l>
+<c>    * 重复数据的保存,</c>
+<l>*     gen_contour_polygon_xld (last_coutour, CoordY, CoordX)</l>
+<l>    CoordX := [CoordX,overlap_x]</l>
+<l>    CoordY := [CoordY,overlap_y]</l>
+<l>*     gen_contour_polygon_xld (last_coutour, CoordY, CoordX)</l>
+<l>    if (Index=8)</l>
+<l>        tuple_select_range (CoordX, |overlap_x|, |CoordX|-1, CoordX)</l>
+<l>        tuple_select_range (CoordY, |overlap_y|, |CoordY|-1, CoordY)</l>
+<l>    endif</l>
+<l>    gen_contour_polygon_xld (last_coutour, CoordY, CoordX)</l>
+<l>endfor</l>
+<l>return ()</l>
+</body>
+<docu id="reduce_overlap_xld">
+<parameters>
+<parameter id="CoordX"/>
+<parameter id="CoordY"/>
+<parameter id="CoordZ"/>
+<parameter id="List_Xld"/>
+<parameter id="last_coutour"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="cut_and_concat">
+<interface>
+<io>
+<par name="List_XldPart" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="Sum_Xld" base_type="iconic" dimension="0"/>
+</oo>
+</interface>
+<body>
+<c>* 通过连续点间的距离大小进行判断（y值进行判断）</c>
+<l>gen_empty_obj (Sum_Xld)</l>
+<l>count_obj (List_XldPart, count_Xld)</l>
+<l>for index := 1 to count_Xld by 1</l>
+<l>    select_obj (List_XldPart, Xld_Index, index)</l>
+<l>    get_contour_xld (Xld_Index, Xld_Index_Y, Xld_Index_X)</l>
+<l>    point_count := |Xld_Index_Y|</l>
+<l>    for i := 0 to point_count by 1</l>
+<l>        distance_pp (Xld_Index_Y[i], Xld_Index_X[i], Xld_Index_Y[i+1], Xld_Index_X[i+1], Distance)</l>
+<l>        if (abs(Distance)&gt;10)</l>
+<l>            subscript := i</l>
+<l>            break</l>
+<l>        endif</l>
+<l>    endfor</l>
+<l>    tuple_select_range (Xld_Index_Y, 0, i, Front_Y)</l>
+<l>    tuple_select_range (Xld_Index_X, 0, i, Front_X)</l>
+<l>    gen_contour_polygon_xld (Xld_Front, Front_Y, Front_X)</l>
+<l>    concat_obj (Sum_Xld, Xld_Front, Sum_Xld)</l>
+<l>    tuple_select_range (Xld_Index_Y, i+1, point_count-1, Behind_Y)</l>
+<l>    tuple_select_range (Xld_Index_X, i+1, point_count-1, Behind_X)</l>
+<l>    gen_contour_polygon_xld (Xld_Behind, Behind_Y, Behind_X)</l>
+<l>    concat_obj (Sum_Xld, Xld_Behind, Sum_Xld)</l>
+<l>endfor</l>
+<l>return ()</l>
+</body>
+<docu id="cut_and_concat">
+<parameters>
+<parameter id="List_XldPart"/>
+<parameter id="Sum_Xld"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="filter_offset_z">
+<interface>
+<ic>
+<par name="offset" base_type="ctrl" dimension="0"/>
+<par name="Part1_CoordX" base_type="ctrl" dimension="0"/>
+<par name="Part1_CoordY" base_type="ctrl" dimension="0"/>
+<par name="Part1_CoordZ" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Part1_CoordXOut" base_type="ctrl" dimension="0"/>
+<par name="Part1_CoordYOut" base_type="ctrl" dimension="0"/>
+<par name="Part1_CoordZOut" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>Part1_CoordXOut := Part1_CoordX</l>
+<l>Part1_CoordYOut := Part1_CoordY</l>
+<l>Part1_CoordZOut := Part1_CoordZ</l>
+<l>tuple_mean (Part1_CoordZOut, Mean_Part1_CoordZ)</l>
+<l>indices := [Part1_CoordZOut [&gt;] Mean_Part1_CoordZ - offset and Part1_CoordZOut [&lt;] Mean_Part1_CoordZ + offset]</l>
+<l>tuple_find (indices, 1, idx)</l>
+<l>Part1_CoordXOut := Part1_CoordXOut[idx]</l>
+<l>Part1_CoordYOut := Part1_CoordYOut[idx]</l>
+<l>Part1_CoordZOut := Part1_CoordZOut[idx]</l>
+<l>return ()</l>
+</body>
+<docu id="filter_offset_z">
+<parameters>
+<parameter id="Part1_CoordX"/>
+<parameter id="Part1_CoordXOut"/>
+<parameter id="Part1_CoordY"/>
+<parameter id="Part1_CoordYOut"/>
+<parameter id="Part1_CoordZ"/>
+<parameter id="Part1_CoordZOut"/>
+<parameter id="offset"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="register_model">
+<interface>
+<ic>
+<par name="Part_ObjectModel3D" base_type="ctrl" dimension="0"/>
+<par name="Benchmark_ObjectModel3D_part" base_type="ctrl" dimension="0"/>
+<par name="Benchmark_CoordX" base_type="ctrl" dimension="0"/>
+<par name="Benchmark_CoordY" base_type="ctrl" dimension="0"/>
+<par name="Benchmark_CoordZ" base_type="ctrl" dimension="0"/>
+<par name="Part_CoordX" base_type="ctrl" dimension="0"/>
+<par name="Part_CoordY" base_type="ctrl" dimension="0"/>
+<par name="Part_CoordZ" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Part_CoordXOut" base_type="ctrl" dimension="0"/>
+<par name="Part_CoordYOut" base_type="ctrl" dimension="0"/>
+<par name="Part_CoordZOut" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>Part_CoordXOut := Part_CoordX</l>
+<l>Part_CoordYOut := Part_CoordY</l>
+<l>Part_CoordZOut := Part_CoordZ</l>
+<l>Part_ObjectModel3DOut := Part_ObjectModel3D</l>
+<l>gen_contour_polygon_xld (benchmark_part, Benchmark_CoordY, Benchmark_CoordX)</l>
+<l>gen_contour_polygon_xld (part, Part_CoordY, Part_CoordX)</l>
+<l>distance_diff := 1</l>
+<l>mean_distance := 1</l>
+<c>* ----模型之间的初始位置相对较好的情况下，进行配准并不会陷入局部最优解，可以用变化值作为收敛条件</c>
+<l>while (distance_diff!=0)</l>
+<l>    distance_flag := mean_distance</l>
+<l>    distance_object_model_3d (Part_ObjectModel3DOut, Benchmark_ObjectModel3D_part, [], 0, ['method', 'distance_to', 'store_closest_index', 'signed_distances'], ['kd-tree', 'points', 'true', 'true'])</l>
+<l>    get_object_model_3d_params (Part_ObjectModel3DOut, '&amp;distance', Tp_Distance)</l>
+<l>    get_object_model_3d_params (Part_ObjectModel3DOut, '&amp;closest_index', Tp_ClosestIndex)</l>
+<l>    Benchmark_partX := Benchmark_CoordX[Tp_ClosestIndex]</l>
+<l>    Benchmark_partY := Benchmark_CoordY[Tp_ClosestIndex]</l>
+<l>    Benchmark_partZ := Benchmark_CoordZ[Tp_ClosestIndex]</l>
+<l>    vector_to_hom_mat3d ('rigid', Part_CoordXOut, Part_CoordYOut, Part_CoordZOut, Benchmark_partX, Benchmark_partY, Benchmark_partZ, HomMat3D)</l>
+<l>    affine_trans_point_3d (HomMat3D, Part_CoordXOut, Part_CoordYOut, Part_CoordZOut, Part_CoordXOut, Part_CoordYOut, Part_CoordZOut)</l>
+<l>    gen_contour_polygon_xld (Xld_Part_Reg, Part_CoordYOut, Part_CoordXOut)</l>
+<l>    gen_object_model_3d_from_points (Part_CoordXOut, Part_CoordYOut, Part_CoordZOut, Part_ObjectModel3DOut)</l>
+<l>    tuple_mean (Tp_Distance, mean_distance)</l>
+<l>    distance_diff := abs(mean_distance-distance_flag)</l>
+<l>endwhile</l>
+<l>return ()</l>
+</body>
+<docu id="register_model">
+<parameters>
+<parameter id="Benchmark_CoordX"/>
+<parameter id="Benchmark_CoordY"/>
+<parameter id="Benchmark_CoordZ"/>
+<parameter id="Benchmark_ObjectModel3D_part"/>
+<parameter id="Part_CoordX"/>
+<parameter id="Part_CoordXOut"/>
+<parameter id="Part_CoordY"/>
+<parameter id="Part_CoordYOut"/>
+<parameter id="Part_CoordZ"/>
+<parameter id="Part_CoordZOut"/>
+<parameter id="Part_ObjectModel3D"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="getxyz_profile">
+<interface>
+<io>
+<par name="MapX" base_type="iconic" dimension="0"/>
+<par name="MapY" base_type="iconic" dimension="0"/>
+<par name="MapZ" base_type="iconic" dimension="0"/>
+<par name="Region" base_type="iconic" dimension="0"/>
+</io>
+<ic>
+<par name="RowId" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Pos_Xs" base_type="ctrl" dimension="0"/>
+<par name="Pos_Ys" base_type="ctrl" dimension="0"/>
+<par name="Pos_Zs" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>get_image_size (MapX, Width, Height)</l>
+<l>gen_rectangle1 (Roi_Row, RowId, 0, RowId, Width-1)</l>
+<l>intersection (Region, Roi_Row, Roi_Row)</l>
+<l>get_region_points (Roi_Row, Rows, Columns)</l>
+<l>get_grayval (MapX, Rows, Columns, Pos_Xs)</l>
+<l>get_grayval (MapY, Rows, Columns, Pos_Ys)</l>
+<l>get_grayval (MapZ, Rows, Columns, Pos_Zs)</l>
+<l>return ()</l>
+</body>
+<docu id="getxyz_profile">
+<parameters>
+<parameter id="MapX"/>
+<parameter id="MapY"/>
+<parameter id="MapZ"/>
+<parameter id="Pos_Xs">
+<mixed_type>false</mixed_type>
+<multivalue>optional</multivalue>
+</parameter>
+<parameter id="Pos_Ys">
+<mixed_type>false</mixed_type>
+<multivalue>optional</multivalue>
+</parameter>
+<parameter id="Pos_Zs"/>
+<parameter id="Region"/>
+<parameter id="RowId"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="read_part_model">
+<interface>
+<oo>
+<par name="Contour" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="DataPath" base_type="ctrl" dimension="0"/>
+<par name="Index" base_type="ctrl" dimension="0"/>
+<par name="id" base_type="ctrl" dimension="0"/>
+<par name="offset" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Part_ObjectModel3D" base_type="ctrl" dimension="0"/>
+<par name="Part_CoordX" base_type="ctrl" dimension="0"/>
+<par name="Part_CoordY" base_type="ctrl" dimension="0"/>
+<par name="Part_CoordZ" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<c>* ----剖面的某一视角下的激光线点云</c>
+<l>read_object (MapX, DataPath + '/' + Index + '/ho_MapX.hobj')</l>
+<l>read_object (MapY, DataPath + '/' + Index + '/ho_MapY.hobj')</l>
+<l>read_object (MapZ, DataPath + '/' + Index + '/ho_MapZ.hobj')</l>
+<c>* </c>
+<c>* ----获取第id剖面xyz的坐标</c>
+<l>getxyz_profile (MapX, MapY, MapZ, MapX, id, Part_CoordX, Part_CoordY, Part_CoordZ)</l>
+<c>* </c>
+<c>* ----用z的值滤除较大较小的点</c>
+<l>filter_offset_z (offset, Part_CoordX, Part_CoordY, Part_CoordZ, Part_CoordX, Part_CoordY, Part_CoordZ)</l>
+<l>gen_object_model_3d_from_points (Part_CoordX, Part_CoordY, Part_CoordZ, Part_ObjectModel3D)</l>
+<l>surface_normals_object_model_3d (Part_ObjectModel3D, 'mls', [], [], Part_ObjectModel3D)</l>
+<l>gen_contour_polygon_xld (Contour, Part_CoordY, Part_CoordX)</l>
+<c>* </c>
+<l>return ()</l>
+</body>
+<docu id="read_part_model">
+<parameters>
+<parameter id="Contour"/>
+<parameter id="DataPath"/>
+<parameter id="Index"/>
+<parameter id="Part_CoordX"/>
+<parameter id="Part_CoordY"/>
+<parameter id="Part_CoordZ"/>
+<parameter id="Part_ObjectModel3D"/>
+<parameter id="id"/>
+<parameter id="offset"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="read_benchmark_model">
+<interface>
+<oo>
+<par name="Benchmark_Contour_part" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="Index" base_type="ctrl" dimension="0"/>
+<par name="Benchmark_DataPath" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Benchmark_CoordX" base_type="ctrl" dimension="0"/>
+<par name="Benchmark_CoordY" base_type="ctrl" dimension="0"/>
+<par name="Benchmark_CoordZ" base_type="ctrl" dimension="0"/>
+<par name="Benchmark_ObjectModel3D_part" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>read_tuple (Benchmark_DataPath + Index + '_x.tup', Benchmark_CoordX)</l>
+<l>read_tuple (Benchmark_DataPath + Index + '_y.tup', Benchmark_CoordY)</l>
+<l>read_tuple (Benchmark_DataPath + Index + '_z.tup', Benchmark_CoordZ)</l>
+<c>* ----插值</c>
+<l>* tuple_gen_const (|Benchmark_CoordY|, 0.00001, tpRadius)</l>
+<l>* gen_contour_polygon_rounded_xld (Benchmark_Contour, Benchmark_CoordY, Benchmark_CoordX, tpRadius, 0.05)</l>
+<l>* get_contour_xld (Benchmark_Contour, Benchmark_CoordY, Benchmark_CoordX)</l>
+<l>* tuple_gen_const (|Benchmark_CoordY|, 0, Benchmark_CoordZ)</l>
+<c>* ----生成模型并计算法线</c>
+<l>gen_object_model_3d_from_points (Benchmark_CoordX, Benchmark_CoordY, Benchmark_CoordZ, Benchmark_ObjectModel3D_part)</l>
+<l>gen_contour_polygon_xld (Benchmark_Contour_part, Benchmark_CoordY, Benchmark_CoordX)</l>
+<l>surface_normals_object_model_3d (Benchmark_ObjectModel3D_part, 'mls', [], [], Benchmark_ObjectModel3D_part)</l>
+<c>* </c>
+<l>return ()</l>
+</body>
+<docu id="read_benchmark_model">
+<parameters>
+<parameter id="Benchmark_Contour_part"/>
+<parameter id="Benchmark_CoordX"/>
+<parameter id="Benchmark_CoordY"/>
+<parameter id="Benchmark_CoordZ"/>
+<parameter id="Benchmark_DataPath"/>
+<parameter id="Benchmark_ObjectModel3D_part"/>
+<parameter id="Index"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="find_upside">
+<interface>
+<oo>
+<par name="ContourUpper" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="Coord_Y" base_type="ctrl" dimension="0"/>
+<par name="Coord_X" base_type="ctrl" dimension="0"/>
+<par name="min_x" base_type="ctrl" dimension="0"/>
+<par name="max_x" base_type="ctrl" dimension="0"/>
+<par name="threshold_edge_distance" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Upper_X" base_type="ctrl" dimension="0"/>
+<par name="Upper_Y" base_type="ctrl" dimension="0"/>
+<par name="Upper_RowBegin" base_type="ctrl" dimension="0"/>
+<par name="Upper_ColBegin" base_type="ctrl" dimension="0"/>
+<par name="Upper_RowEnd" base_type="ctrl" dimension="0"/>
+<par name="Upper_ColEnd" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>indices := [Coord_Y [&lt;] 0 and Coord_X [&gt;] min_x + threshold_edge_distance and Coord_X [&lt;] max_x - threshold_edge_distance ]</l>
+<l>tuple_find (indices, 1, indices)</l>
+<l>Upper_X := Coord_X[indices]</l>
+<l>Upper_Y := Coord_Y[indices]</l>
+<l>gen_contour_polygon_xld (ContourUpper, Upper_Y, Upper_X)</l>
+<l>fit_line_contour_xld (ContourUpper, 'tukey', -1, 0, 5, 2, Upper_RowBegin, Upper_ColBegin, Upper_RowEnd, Upper_ColEnd, Upper_Nr, Upper_Nc, Upper_Dist)</l>
+<l>return ()</l>
+</body>
+<docu id="find_upside">
+<parameters>
+<parameter id="ContourUpper"/>
+<parameter id="Coord_X"/>
+<parameter id="Coord_Y"/>
+<parameter id="Upper_ColBegin"/>
+<parameter id="Upper_ColEnd"/>
+<parameter id="Upper_RowBegin"/>
+<parameter id="Upper_RowEnd"/>
+<parameter id="Upper_X"/>
+<parameter id="Upper_Y"/>
+<parameter id="max_x"/>
+<parameter id="min_x"/>
+<parameter id="threshold_edge_distance"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="find_bottomside">
+<interface>
+<oo>
+<par name="Contourbottom" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="Coord_Y" base_type="ctrl" dimension="0"/>
+<par name="Coord_X" base_type="ctrl" dimension="0"/>
+<par name="min_x" base_type="ctrl" dimension="0"/>
+<par name="max_x" base_type="ctrl" dimension="0"/>
+<par name="threshold_edge_distance" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Bottom_X" base_type="ctrl" dimension="0"/>
+<par name="Bottom_Y" base_type="ctrl" dimension="0"/>
+<par name="Bottom_RowBegin" base_type="ctrl" dimension="0"/>
+<par name="Bottom_ColBegin" base_type="ctrl" dimension="0"/>
+<par name="Bottom_RowEnd" base_type="ctrl" dimension="0"/>
+<par name="Bottom_ColEnd" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>indices := [Coord_Y [&gt;] 0 and Coord_X [&gt;] min_x + threshold_edge_distance and Coord_X [&lt;] max_x - threshold_edge_distance ]</l>
+<l>tuple_find (indices, 1, indices)</l>
+<l>Bottom_X := Coord_X[indices]</l>
+<l>Bottom_Y := Coord_Y[indices]</l>
+<l>gen_contour_polygon_xld (Contourbottom, Bottom_Y, Bottom_X)</l>
+<l>fit_line_contour_xld (Contourbottom, 'tukey', -1, 0, 5, 2, Bottom_RowBegin, Bottom_ColBegin, Bottom_RowEnd, Bottom_ColEnd, Lower_Nr, Lower_Nc, Lower_Dist)</l>
+<l>return ()</l>
+</body>
+<docu id="find_bottomside">
+<parameters>
+<parameter id="Bottom_ColBegin"/>
+<parameter id="Bottom_ColEnd"/>
+<parameter id="Bottom_RowBegin"/>
+<parameter id="Bottom_RowEnd"/>
+<parameter id="Bottom_X"/>
+<parameter id="Bottom_Y"/>
+<parameter id="Contourbottom"/>
+<parameter id="Coord_X"/>
+<parameter id="Coord_Y"/>
+<parameter id="max_x"/>
+<parameter id="min_x"/>
+<parameter id="threshold_edge_distance"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="find_leftside">
+<interface>
+<oo>
+<par name="ContourLeft" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="Coord_X" base_type="ctrl" dimension="0"/>
+<par name="Coord_Y" base_type="ctrl" dimension="0"/>
+<par name="max_y" base_type="ctrl" dimension="0"/>
+<par name="min_y" base_type="ctrl" dimension="0"/>
+<par name="threshold_edge_distance" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Left_X" base_type="ctrl" dimension="0"/>
+<par name="Left_Y" base_type="ctrl" dimension="0"/>
+<par name="Left_RowBegin" base_type="ctrl" dimension="0"/>
+<par name="Left_ColBegin" base_type="ctrl" dimension="0"/>
+<par name="Left_RowEnd" base_type="ctrl" dimension="0"/>
+<par name="Left_ColEnd" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>indices := [Coord_X [&lt;] 0 and Coord_Y [&lt;] max_y - threshold_edge_distance and Coord_Y [&gt;] min_y + threshold_edge_distance ]</l>
+<l>tuple_find (indices, 1, indices)</l>
+<l>Left_X := Coord_X[indices]</l>
+<l>Left_Y := Coord_Y[indices]</l>
+<l>gen_contour_polygon_xld (ContourLeft, Left_Y, Left_X)</l>
+<l>fit_line_contour_xld (ContourLeft, 'tukey', -1, 0, 5, 2, Left_RowBegin, Left_ColBegin, Left_RowEnd, Left_ColEnd, Left_Nr, Left_Nc, Left_Dist)</l>
+<l>return ()</l>
+</body>
+<docu id="find_leftside">
+<parameters>
+<parameter id="ContourLeft"/>
+<parameter id="Coord_X"/>
+<parameter id="Coord_Y"/>
+<parameter id="Left_ColBegin"/>
+<parameter id="Left_ColEnd"/>
+<parameter id="Left_RowBegin"/>
+<parameter id="Left_RowEnd"/>
+<parameter id="Left_X"/>
+<parameter id="Left_Y"/>
+<parameter id="max_y"/>
+<parameter id="min_y"/>
+<parameter id="threshold_edge_distance"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="find_rightside">
+<interface>
+<oo>
+<par name="ContourRight" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="Coord_X" base_type="ctrl" dimension="0"/>
+<par name="Coord_Y" base_type="ctrl" dimension="0"/>
+<par name="max_y" base_type="ctrl" dimension="0"/>
+<par name="min_y" base_type="ctrl" dimension="0"/>
+<par name="threshold_edge_distance" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Right_X" base_type="ctrl" dimension="0"/>
+<par name="Right_Y" base_type="ctrl" dimension="0"/>
+<par name="Right_RowBegin" base_type="ctrl" dimension="0"/>
+<par name="Right_ColBegin" base_type="ctrl" dimension="0"/>
+<par name="Right_RowEnd" base_type="ctrl" dimension="0"/>
+<par name="Right_ColEnd" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>indices := [Coord_X [&gt;] 0 and Coord_Y [&lt;] max_y - threshold_edge_distance and Coord_Y [&gt;] min_y + threshold_edge_distance ]</l>
+<l>tuple_find (indices, 1, indices)</l>
+<l>Right_X := Coord_X[indices]</l>
+<l>Right_Y := Coord_Y[indices]</l>
+<l>gen_contour_polygon_xld (ContourRight, Right_Y, Right_X)</l>
+<l>fit_line_contour_xld (ContourRight, 'tukey', -1, 0, 5, 2, Right_RowBegin, Right_ColBegin, Right_RowEnd, Right_ColEnd, Right_Nr, Right_Nc, Right_Dist)</l>
+<l>return ()</l>
+</body>
+<docu id="find_rightside">
+<parameters>
+<parameter id="ContourRight"/>
+<parameter id="Coord_X"/>
+<parameter id="Coord_Y"/>
+<parameter id="Right_ColBegin"/>
+<parameter id="Right_ColEnd"/>
+<parameter id="Right_RowBegin"/>
+<parameter id="Right_RowEnd"/>
+<parameter id="Right_X"/>
+<parameter id="Right_Y"/>
+<parameter id="max_y"/>
+<parameter id="min_y"/>
+<parameter id="threshold_edge_distance"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="find_max_min">
+<interface>
+<ic>
+<par name="Coord_Y" base_type="ctrl" dimension="0"/>
+<par name="Coord_X" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="min_y" base_type="ctrl" dimension="0"/>
+<par name="max_y" base_type="ctrl" dimension="0"/>
+<par name="min_x" base_type="ctrl" dimension="0"/>
+<par name="max_x" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>tuple_sort_index (Coord_Y, Indices)</l>
+<l>min_y := Coord_Y[Indices[0]]</l>
+<l>max_y := Coord_Y[Indices[|Coord_Y|-1]]</l>
+<l>tuple_sort_index (Coord_X, Indices)</l>
+<l>min_x := Coord_X[Indices[0]]</l>
+<l>max_x := Coord_X[Indices[|Coord_Y|-1]]</l>
+<l>return ()</l>
+</body>
+<docu id="find_max_min">
+<parameters>
+<parameter id="Coord_X"/>
+<parameter id="Coord_Y"/>
+<parameter id="max_x"/>
+<parameter id="max_y"/>
+<parameter id="min_x"/>
+<parameter id="min_y"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="corner_radius">
+<interface>
+<ic>
+<par name="Coord_X_Single" base_type="ctrl" dimension="0"/>
+<par name="Coord_Y_Single" base_type="ctrl" dimension="0"/>
+<par name="threshold_edge_distance" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="Radius" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>Coord_X_SingleOut := Coord_X_Single</l>
+<l>Coord_Y_SingleOut := Coord_Y_Single</l>
+<l>length := |Coord_X_SingleOut|</l>
+<l>tuple_select_range (Coord_Y_SingleOut, threshold_edge_distance, length-threshold_edge_distance, Coord_Y_SingleOut)</l>
+<l>tuple_select_range (Coord_X_SingleOut, threshold_edge_distance, length-threshold_edge_distance, Coord_X_SingleOut)</l>
+<l>gen_contour_polygon_xld (Contour, Coord_Y_SingleOut, Coord_X_SingleOut)</l>
+<c></c>
+<l>length := |Coord_Y_SingleOut|</l>
+<c>* 取第一条直线区域</c>
+<l>tuple_select_range (Coord_Y_SingleOut, 0, length/3, FisrtCoord_Y_Single)</l>
+<l>tuple_select_range (Coord_X_SingleOut, 0, length/3, FisrtCoord_X_Single)</l>
+<l>gen_contour_polygon_xld (FisrtContour, FisrtCoord_Y_Single, FisrtCoord_X_Single)</l>
+<l>fit_line_contour_xld (FisrtContour, 'tukey', -1, 0, 5, 2, Coord_Y_SingleBegin, Coord_X_SingleBegin, Coord_Y_SingleEnd, Coord_X_SingleEnd, Nr, Nc, Dist)</l>
+<c>* 找到圆弧起始点</c>
+<l>distance_pl (Coord_Y_SingleOut, Coord_X_SingleOut, Coord_Y_SingleBegin, Coord_X_SingleBegin, Coord_Y_SingleEnd, Coord_X_SingleEnd, Distance)</l>
+<l>for i := 0 to |Distance| by 1</l>
+<l>    if (Distance[i]&gt;0.2)</l>
+<l>        break</l>
+<l>    endif</l>
+<l>endfor</l>
+<c>* 去掉第一条直线</c>
+<l>tuple_select_range (Coord_Y_SingleOut, i, length-1, Coord_Y_SingleOut)</l>
+<l>tuple_select_range (Coord_X_SingleOut, i, length-1, Coord_X_SingleOut)</l>
+<l>gen_contour_polygon_xld (Contour1, Coord_Y_SingleOut, Coord_X_SingleOut)</l>
+<l>length := |Coord_Y_SingleOut|</l>
+<l>tuple_select_range (Coord_Y_SingleOut, 40, length-1, SecondCoord_Y_Single)</l>
+<l>tuple_select_range (Coord_X_SingleOut, 40, length-1, SecondCoord_X_Single)</l>
+<l>gen_contour_polygon_xld (SecondContour, SecondCoord_Y_Single, SecondCoord_X_Single)</l>
+<l>fit_line_contour_xld (SecondContour, 'tukey', -1, 0, 5, 2, Coord_Y_SingleBegin, Coord_X_SingleBegin, Coord_Y_SingleEnd, Coord_X_SingleEnd, Nr, Nc, Dist)</l>
+<c>* 找到圆弧终止点</c>
+<l>distance_pl (Coord_Y_SingleOut, Coord_X_SingleOut, Coord_Y_SingleBegin, Coord_X_SingleBegin, Coord_Y_SingleEnd, Coord_X_SingleEnd, Distance)</l>
+<l>for i := 0 to |Distance| by 1</l>
+<l>    if (Distance[i]&lt;0.2)</l>
+<l>        break</l>
+<l>    endif</l>
+<l>endfor</l>
+<l>tuple_select_range (Coord_Y_SingleOut, 0, i, ArcCoord_Y_Single)</l>
+<l>tuple_select_range (Coord_X_SingleOut, 0, i, ArcCoord_X_Single)</l>
+<l>gen_contour_polygon_xld (ArcContour, ArcCoord_Y_Single, ArcCoord_X_Single)</l>
+<c>* 拟合圆</c>
+<l>fit_circle_contour_xld (ArcContour, 'algebraic', -1, 0, 0, 3, 2, Coord_Y_Single1, Coord_X_Singleumn1, Radius, StartPhi, EndPhi, PointOrder)</l>
+<c>* 生成圆</c>
+<l>gen_circle_contour_xld (ContCircle, Coord_Y_Single1, Coord_X_Singleumn1, Radius, 0, 6.28318, 'positive', 1)</l>
+<l>return ()</l>
+</body>
+<docu id="corner_radius">
+<parameters>
+<parameter id="Coord_X_Single"/>
+<parameter id="Coord_Y_Single"/>
+<parameter id="Radius"/>
+<parameter id="threshold_edge_distance"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="origin_adjustment">
+<interface>
+<io>
+<par name="Contour" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="Contour_adjustment" base_type="iconic" dimension="0"/>
+</oo>
+<oc>
+<par name="Coord_Y" base_type="ctrl" dimension="0"/>
+<par name="Coord_X" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<l>Contour_adjustment := Contour</l>
+<l>area_center_points_xld (Contour_adjustment, Area, Row, Column)</l>
+<l>hom_mat2d_identity (HomMat2DIdentity)</l>
+<l>hom_mat2d_translate (HomMat2DIdentity, -Row, -Column, HomMat2DTranslate)</l>
+<l>affine_trans_contour_xld (Contour_adjustment, Contour_adjustment, HomMat2DTranslate)</l>
+<l>area_center_points_xld (Contour_adjustment, Area, Row, Column)</l>
+<l>get_contour_xld (Contour_adjustment, Coord_Y, Coord_X)</l>
+<l>return ()</l>
+</body>
+<docu id="origin_adjustment">
+<parameters>
+<parameter id="Contour"/>
+<parameter id="Contour_adjustment"/>
+<parameter id="Coord_X"/>
+<parameter id="Coord_Y"/>
+</parameters>
+</docu>
+</procedure>
+</hdevelop>
